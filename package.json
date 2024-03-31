@@ -1,0 +1,25 @@
+{
+  "name": "auth-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/index.js"
+  },
+  "author": "Daniel Mercado <daniel.mercado.dev@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "5.1.1",
+    "express": "4.19.2",
+    "http-status": "1.7.4",
+    "joi": "17.12.2",
+    "sqlite3": "^5.1.7",
+    "tiny-dependecy-injection": "^1.0.3",
+    "uuid": "9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
