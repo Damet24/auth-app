@@ -8,6 +8,7 @@ function registerServices(container) {
     container.register('auth-service', AuthService)
         .addArgument('@auth-repository')
         .addArgument(10)
+        .addArgument('secret')
         .asSingleton()
 }
 

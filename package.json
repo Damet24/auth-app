@@ -15,6 +15,7 @@
     "express": "4.19.2",
     "http-status": "1.7.4",
     "joi": "17.12.2",
+    "jsonwebtoken": "9.0.2",
     "sqlite3": "^5.1.7",
     "tiny-dependecy-injection": "^1.0.3",
     "uuid": "9.0.1"
