@@ -1,144 +1,155 @@
 import { User } from '../../Domain/Entities/User.js';
+import { v4 as uuidv4 } from 'uuid';
 
 export class SqliteUserRepository {
   constructor(db) {
     this.db = db;
   }
 
-  async findByEmail(tenantId, email) {
-    const result = await this.db
-      .prepare(
-        `SELECT id,
-                    tenant_id       as tenantId,
-                    email,
-                    email_verified  as emailVerified,
-                    active,
-                    is_global_admin as isGlobalAdmin,
-                    token_version   as tokenVersion,
-                    created_at      as createdAt
-             FROM users
-             WHERE tenant_id = ?
-               AND email = ?`
-      )
-      .get(tenantId, email);
+  mapRowToUser(row) {
+    if (!row) return null;
+
     return new User({
-      id: result.id,
-      tenantId: result.tenantId,
-      email: result.email,
-      emailVerified: result.emailVerified === 1,
-      active: result.active === 1,
-      isGlobalAdmin: result.isGlobalAdmin === 1,
-      tokenVersion: result.tokenVersion,
-      createdAt: new Date(result.createdAt),
+      id: row.id,
+      tenantId: row.tenantId,
+      email: row.email,
+      emailVerified: row.emailVerified === 1,
+      active: row.active === 1,
+      isGlobalAdmin: row.isGlobalAdmin === 1,
+      tokenVersion: row.tokenVersion,
+      createdAt: new Date(row.createdAt),
     });
   }
 
+  baseSelect() {
+    return `
+      SELECT id,
+             tenant_id       as tenantId,
+             email,
+             email_verified  as emailVerified,
+             active,
+             is_global_admin as isGlobalAdmin,
+             token_version   as tokenVersion,
+             created_at      as createdAt
+      FROM users
+    `;
+  }
+
   async findById(id) {
-    const result = await this.db
-      .prepare(
-        `SELECT id,
-                    tenant_id       as tenantId,
-                    email,
-                    email_verified  as emailVerified,
-                    active,
-                    is_global_admin as isGlobalAdmin,
-                    token_version   as tokenVersion,
-                    created_at      as createdAt
-             FROM users
-             WHERE id = ?`
-      )
+    const row = await this.db
+      .prepare(`${this.baseSelect()} WHERE id = ?`)
       .get(id);
-    return new User({
-      id: result.id,
-      tenantId: result.tenantId,
-      email: result.email,
-      emailVerified: result.emailVerified === 1,
-      active: result.active === 1,
-      isGlobalAdmin: result.isGlobalAdmin === 1,
-      tokenVersion: result.tokenVersion,
-      createdAt: new Date(result.createdAt),
-    });
+
+    return this.mapRowToUser(row);
+  }
+
+  async findByEmail(tenantId, email) {
+    const row = await this.db
+      .prepare(`${this.baseSelect()} WHERE tenant_id = ? AND email = ?`)
+      .get(tenantId, email);
+
+    return this.mapRowToUser(row);
+  }
+
+  async findGlobalByEmail(email) {
+    const row = await this.db
+      .prepare(`${this.baseSelect()} WHERE is_global_admin = 1 AND email = ?`)
+      .get(email);
+
+    return this.mapRowToUser(row);
+  }
+
+  async findAll() {
+    const rows = await this.db.prepare(this.baseSelect()).all();
+
+    return rows.map((r) => this.mapRowToUser(r));
+  }
+
+  async findByTenant(tenantId) {
+    const rows = await this.db
+      .prepare(`${this.baseSelect()} WHERE tenant_id = ?`)
+      .all(tenantId);
+
+    return rows.map((r) => this.mapRowToUser(r));
+  }
+
+  async existsByEmail(tenantId, email) {
+    const row = await this.db
+      .prepare(`SELECT 1 FROM users WHERE tenant_id = ? AND email = ?`)
+      .get(tenantId, email);
+
+    return !!row;
   }
 
   async create({
     tenantId,
     email,
-    emailVerified,
-    active,
-    tokenVersion,
-    createdAt,
+    emailVerified = false,
+    active = true,
+    tokenVersion = 1,
+    isGlobalAdmin = false,
   }) {
+    const id = uuidv4();
+    const createdAt = new Date().toISOString();
+
     await this.db
       .prepare(
-        `insert into users
-                     (tenant_id, email, email_verified, active, token_version, created_at)
-                 values (?, ?, ?, ?, ?, ?);`
+        `
+        INSERT INTO users (
+          id,
+          tenant_id,
+          email,
+          email_verified,
+          active,
+          is_global_admin,
+          token_version,
+          created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `
       )
-      .run(tenantId, email, emailVerified, active, tokenVersion, createdAt);
+      .run(
+        id,
+        tenantId,
+        email,
+        emailVerified ? 1 : 0,
+        active ? 1 : 0,
+        isGlobalAdmin ? 1 : 0,
+        tokenVersion,
+        createdAt
+      );
+
+    return this.findById(id);
+  }
+
+  async update(id, { emailVerified, active }) {
+    await this.db
+      .prepare(
+        `
+        UPDATE users
+        SET email_verified = COALESCE(?, email_verified),
+            active = COALESCE(?, active)
+        WHERE id = ?
+      `
+      )
+      .run(
+        emailVerified !== undefined ? (emailVerified ? 1 : 0) : null,
+        active !== undefined ? (active ? 1 : 0) : null,
+        id
+      );
+
+    return this.findById(id);
+  }
+
+  async deactivate(id) {
+    await this.db.prepare(`UPDATE users SET active = 0 WHERE id = ?`).run(id);
   }
 
   async incrementTokenVersion(id) {
-    await this.db.run(
-      'UPDATE users SET token_version = token_version + 1 WHERE id = ?',
-      [id]
-    );
-  }
-
-  async findAll() {
-    const result = await this.db
+    await this.db
       .prepare(
-        `SELECT id,
-                                                 tenant_id       as tenantId,
-                                                 email,
-                                                 email_verified  as emailVerified,
-                                                 active,
-                                                 is_global_admin as isGlobalAdmin,
-                                                 token_version   as tokenVersion,
-                                                 created_at      as createdAt
-                                          FROM users`
+        `UPDATE users SET token_version = token_version + 1 WHERE id = ?`
       )
-      .all();
-    return result.map(
-      (item) =>
-        new User({
-          id: item.id,
-          tenantId: item.tenantId,
-          email: item.email,
-          emailVerified: item.emailVerified === 1,
-          active: item.active === 1,
-          isGlobalAdmin: item.isGlobalAdmin === 1,
-          tokenVersion: item.tokenVersion,
-          createdAt: new Date(item.createdAt),
-        })
-    );
-  }
-
-  async findByTenant(tenantId) {
-    const result = await this.db.all(
-      `SELECT id,
-                    tenant_id       as tenantId,
-                    email,
-                    email_verified  as emailVerified,
-                    active,
-                    is_global_admin as isGlobalAdmin,
-                    token_version   as tokenVersion,
-                    created_at      as createdAt
-             FROM users
-             WHERE tenant_id = ?`,
-      [tenantId]
-    );
-    return result.map(
-      (item) =>
-        new User({
-          id: item.id,
-          tenantId: item.tenantId,
-          email: item.email,
-          emailVerified: item.emailVerified === 1,
-          active: item.active === 1,
-          isGlobalAdmin: item.isGlobalAdmin === 1,
-          tokenVersion: item.tokenVersion,
-          createdAt: new Date(item.createdAt),
-        })
-    );
+      .run(id);
   }
 }
