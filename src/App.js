@@ -6,6 +6,7 @@ import {ZodError} from 'zod';
 import tenantRoutes from './Modules/Tenants/Routes.js';
 import applicationRoutes from './Modules/Applications/Routes.js';
 import permissionRoutes from "./Modules/Permissions/Routes.js";
+import roleRoutes from "./Modules/Roles/Routes.js";
 
 export function buildApp() {
     const app = Fastify({logger: true});
@@ -46,6 +47,8 @@ export function buildApp() {
     app.register(tenantRoutes, {prefix: '/tenants'});
     app.register(applicationRoutes, {prefix: '/applications'});
     app.register(permissionRoutes, {prefix: '/permissions'});
+    app.register(roleRoutes, { prefix: '/roles' });
+
 
     return app;
 }
