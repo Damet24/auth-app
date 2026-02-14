@@ -8,12 +8,13 @@ import {
   updateUser,
   deactivateUser,
 } from './UserController.js';
+import { PERMISSIONS } from '../Auth/Permissions.js';
 
 export default async function userRoutes(fastify) {
   fastify.get(
     '/',
     {
-      preHandler: [authenticate, authorize('manage_users')],
+      preHandler: [authenticate, authorize(PERMISSIONS.USER.READ)],
     },
     listUsers
   );
@@ -21,7 +22,7 @@ export default async function userRoutes(fastify) {
   fastify.get(
     '/:id',
     {
-      preHandler: [authenticate, authorize('manage_users')],
+      preHandler: [authenticate, authorize(PERMISSIONS.USER.READ)],
     },
     getUser
   );
@@ -29,7 +30,7 @@ export default async function userRoutes(fastify) {
   fastify.post(
     '/',
     {
-      preHandler: [authenticate, authorize('manage_users')],
+      preHandler: [authenticate, authorize(PERMISSIONS.USER.CREATE)],
     },
     createUser
   );
@@ -37,7 +38,7 @@ export default async function userRoutes(fastify) {
   fastify.patch(
     '/:id',
     {
-      preHandler: [authenticate, authorize('manage_users')],
+      preHandler: [authenticate, authorize(PERMISSIONS.USER.UPDATE)],
     },
     updateUser
   );
@@ -45,7 +46,7 @@ export default async function userRoutes(fastify) {
   fastify.delete(
     '/:id',
     {
-      preHandler: [authenticate, authorize('manage_users')],
+      preHandler: [authenticate, authorize(PERMISSIONS.USER.DELETE)],
     },
     deactivateUser
   );

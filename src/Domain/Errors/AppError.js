@@ -7,3 +7,9 @@ export class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+
+export class ForbiddenError extends AppError {}
+
+export class NotFoundError extends AppError {}
+
+export class ConflictError extends AppError {}

@@ -1,4 +1,4 @@
-class Tenant {
+export class Tenant {
   constructor({ id, name, active = true, createdAt }) {
     this.id = id;
     this.name = name;

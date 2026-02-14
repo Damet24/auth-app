@@ -3,6 +3,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '../../Domain/Errors/AuthErrors.js';
+import { UserAlreadyExists } from '../../Domain/Errors/UserErrors.js';
 
 export class UserService {
   async listUsers(currentUser) {
@@ -27,8 +28,8 @@ export class UserService {
     return user;
   }
 
-  async createUser(currentUser, { email, isGlobalAdmin = false }) {
-    if (isGlobalAdmin && !currentUser.isGlobalAdmin) {
+  async createUser(currentUser, { email, is_global_admin = false }) {
+    if (is_global_admin && !currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can create global admins');
     }
 
@@ -39,7 +40,7 @@ export class UserService {
     const exists = await userRepository.existsByEmail(tenantId, email);
 
     if (exists) {
-      throw new Error('User already exists');
+      throw new UserAlreadyExists();
     }
 
     return await userRepository.create({
@@ -47,7 +48,7 @@ export class UserService {
       email,
       emailVerified: false,
       active: true,
-      isGlobalAdmin,
+      is_global_admin,
     });
   }
 

@@ -23,7 +23,7 @@ export async function getUser(request, reply) {
 export async function createUser(request, reply) {
   const schema = z.object({
     email: z.email(),
-    isGlobalAdmin: z.boolean().optional(),
+    is_global_admin: z.boolean().optional(),
   });
 
   const data = schema.parse(request.body);
