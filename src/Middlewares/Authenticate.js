@@ -19,13 +19,13 @@ export async function authenticate(request, reply) {
 
     const user = await userRepository.findById(payload.sub);
 
-    if (!user || user.tokenVersion !== payload.token_version) {
+    if (!user || user.tokenVersion !== payload.tokenVersion) {
       throw new TokenInvalidatedError();
     }
 
     request.user = {
       ...payload,
-      is_global_admin: user.isGlobalAdmin,
+      isGlobalAdmin: user.isGlobalAdmin,
     };
   } catch (err) {
     return reply.code(401).send({ error: 'Invalid token' });

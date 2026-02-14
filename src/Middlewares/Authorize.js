@@ -1,6 +1,6 @@
 export function authorize(permission) {
   return async function (request, reply) {
-    if (request.user.is_global_admin) {
+    if (request.user.isGlobalAdmin) {
       return;
     }
 

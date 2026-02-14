@@ -35,3 +35,15 @@ export class TokenInvalidatedError extends AppError {
     super('Token invalidated', 401, 'TOKEN_INVALIDATED');
   }
 }
+
+export class NotFoundError extends AppError  {
+  constructor() {
+    super('Not Found', 404, 'NOT_FOUND');
+  }
+}
+
+export class ForbiddenError extends AppError  {
+  constructor() {
+    super('Forbidden', 403, 'FORBIDDEN');
+  }
+}

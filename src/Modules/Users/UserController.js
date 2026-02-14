@@ -5,9 +5,6 @@ import { userRepository } from '../../Domain/Repositories/index.js';
 const service = new UserService();
 
 export async function listUsers(request, response) {
-  const users = await service.listUsers(
-    request.user.is_global_admin,
-    request.user.tenant_id
-  );
+  const users = await service.listUsers(request.user);
   return response.send(users);
 }
