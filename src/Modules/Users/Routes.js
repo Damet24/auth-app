@@ -7,6 +7,9 @@ import {
   createUser,
   updateUser,
   deactivateUser,
+  assignRole,
+  removeRole,
+  listUserRoles,
 } from './Controller.js';
 import { PERMISSIONS } from '../../Domain/Constants/Permissions.js';
 
@@ -49,5 +52,23 @@ export default async function userRoutes(fastify) {
       preHandler: [authenticate, authorize(PERMISSIONS.USER.DELETE)],
     },
     deactivateUser
+  );
+
+  fastify.get(
+    '/:userId/roles',
+    { preHandler: [authenticate, authorize(PERMISSIONS.USER.READ)] },
+    listUserRoles
+  );
+
+  fastify.post(
+    '/roles',
+    { preHandler: [authenticate, authorize(PERMISSIONS.USER.UPDATE)] },
+    assignRole
+  );
+
+  fastify.delete(
+    '/roles',
+    { preHandler: [authenticate, authorize(PERMISSIONS.USER.UPDATE)] },
+    removeRole
   );
 }

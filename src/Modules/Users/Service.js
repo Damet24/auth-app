@@ -1,4 +1,9 @@
-import { userRepository } from '../../Domain/Repositories/index.js';
+import {
+  applicationRepository,
+  roleRepository,
+  userRepository,
+  userRoleRepository,
+} from '../../Domain/Repositories/index.js';
 import {
   ForbiddenError,
   NotFoundError,
@@ -78,5 +83,58 @@ export class Service {
     }
 
     await userRepository.deactivate(userId);
+  }
+
+  async assignRole(currentUser, userId, roleId) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new NotFoundError('User not found');
+
+    const role = await roleRepository.findById(roleId);
+    if (!role) throw new NotFoundError('Role not found');
+
+    const app = await applicationRepository.findById(role.applicationId);
+
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    if (
+      !currentUser.is_global_admin &&
+      user.tenantId !== currentUser.tenantId
+    ) {
+      throw new ForbiddenError(
+        'Cannot assign role to user from another tenant'
+      );
+    }
+
+    await userRoleRepository.addRole(userId, roleId);
+  }
+
+  async removeRole(currentUser, userId, roleId) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new NotFoundError('User not found');
+
+    if (
+      !currentUser.is_global_admin &&
+      user.tenantId !== currentUser.tenantId
+    ) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    await userRoleRepository.removeRole(userId, roleId);
+  }
+
+  async listUserRoles(currentUser, userId) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new NotFoundError('User not found');
+
+    if (
+      !currentUser.is_global_admin &&
+      user.tenantId !== currentUser.tenantId
+    ) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    return userRoleRepository.findRolesByUser(userId);
   }
 }

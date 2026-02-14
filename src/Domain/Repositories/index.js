@@ -6,7 +6,8 @@ import { SqliteRoleRepository } from '../../Infrastructure/Sqlite/SqliteRoleRepo
 import { SqlitePermissionRepository } from '../../Infrastructure/Sqlite/SqlitePermissionRepository.js';
 import { SqliteSessionRepository } from '../../Infrastructure/Sqlite/SqliteSessionRepository.js';
 import { SqliteUserRepository } from '../../Infrastructure/Sqlite/SqliteUserRepository.js';
-import {SqliteRolePermissionRepository} from "../../Infrastructure/Sqlite/SqliteRolePermissionRepository.js";
+import { SqliteRolePermissionRepository } from '../../Infrastructure/Sqlite/SqliteRolePermissionRepository.js';
+import { SqliteUserRoleRepository } from '../../Infrastructure/Sqlite/SqliteUserRoleRepository.js';
 
 const db = await createDb();
 
@@ -18,3 +19,4 @@ export const permissionRepository = new SqlitePermissionRepository(db);
 export const sessionRepo = new SqliteSessionRepository(db);
 export const userRepository = new SqliteUserRepository(db);
 export const rolePermissionRepository = new SqliteRolePermissionRepository(db);
+export const userRoleRepository = new SqliteUserRoleRepository(db);

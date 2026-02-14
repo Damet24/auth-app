@@ -1,103 +1,100 @@
 import {
-    roleRepository,
-    applicationRepository, permissionRepository, rolePermissionRepository
+  roleRepository,
+  applicationRepository,
+  permissionRepository,
+  rolePermissionRepository,
 } from '../../Domain/Repositories/index.js';
 
 import {
-    ForbiddenError,
-    NotFoundError,
-    ConflictError
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
 } from '../../Domain/Errors/AppError.js';
 
 export class RoleService {
+  async listRoles(currentUser, applicationId) {
+    const app = await applicationRepository.findById(applicationId);
+    if (!app) throw new NotFoundError('Application not found');
 
-    async listRoles(currentUser, applicationId) {
-        const app = await applicationRepository.findById(applicationId);
-        if (!app) throw new NotFoundError("Application not found");
-
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
-
-        return roleRepository.findByApplication(applicationId);
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
     }
 
-    async createRole(currentUser, applicationId, { name }) {
-        const app = await applicationRepository.findById(applicationId);
-        if (!app) throw new NotFoundError("Application not found");
+    return roleRepository.findByApplication(applicationId);
+  }
 
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
+  async createRole(currentUser, applicationId, { name }) {
+    const app = await applicationRepository.findById(applicationId);
+    if (!app) throw new NotFoundError('Application not found');
 
-        const exists = await roleRepository.exists(applicationId, name);
-        if (exists) throw new ConflictError("Roles already exists");
-
-        return roleRepository.create({ applicationId, name });
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
     }
 
-    async updateRole(currentUser, roleId, data) {
-        const role = await roleRepository.findById(roleId);
-        if (!role) throw new NotFoundError("Roles not found");
+    const exists = await roleRepository.exists(applicationId, name);
+    if (exists) throw new ConflictError('Roles already exists');
 
-        const app = await applicationRepository.findById(role.applicationId);
+    return roleRepository.create({ applicationId, name });
+  }
 
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
+  async updateRole(currentUser, roleId, data) {
+    const role = await roleRepository.findById(roleId);
+    if (!role) throw new NotFoundError('Roles not found');
 
-        return roleRepository.update(roleId, data);
+    const app = await applicationRepository.findById(role.applicationId);
+
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
     }
 
-    async assignPermission(currentUser, roleId, permissionId) {
-        const role = await roleRepository.findById(roleId);
-        if (!role) throw new NotFoundError("Role not found");
+    return roleRepository.update(roleId, data);
+  }
 
-        const permission = await permissionRepository.findById(permissionId);
-        if (!permission) throw new NotFoundError("Permission not found");
+  async assignPermission(currentUser, roleId, permissionId) {
+    const role = await roleRepository.findById(roleId);
+    if (!role) throw new NotFoundError('Role not found');
 
-        if (role.applicationId !== permission.applicationId) {
-            throw new ForbiddenError("Permission does not belong to role application");
-        }
+    const permission = await permissionRepository.findById(permissionId);
+    if (!permission) throw new NotFoundError('Permission not found');
 
-        const app = await applicationRepository.findById(role.applicationId);
-
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
-
-        await rolePermissionRepository.addPermission(roleId, permissionId);
+    if (role.applicationId !== permission.applicationId) {
+      throw new ForbiddenError(
+        'Permission does not belong to role application'
+      );
     }
 
-    async removePermission(currentUser, roleId, permissionId) {
-        const role = await roleRepository.findById(roleId);
-        if (!role) throw new NotFoundError("Role not found");
+    const app = await applicationRepository.findById(role.applicationId);
 
-        const app = await applicationRepository.findById(role.applicationId);
-
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
-
-        await rolePermissionRepository.removePermission(roleId, permissionId);
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
     }
 
-    async listPermissions(currentUser, roleId) {
-        const role = await roleRepository.findById(roleId);
-        if (!role) throw new NotFoundError("Role not found");
+    await rolePermissionRepository.addPermission(roleId, permissionId);
+  }
 
-        const app = await applicationRepository.findById(role.applicationId);
+  async removePermission(currentUser, roleId, permissionId) {
+    const role = await roleRepository.findById(roleId);
+    if (!role) throw new NotFoundError('Role not found');
 
-        if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenantId) {
-            throw new ForbiddenError("Access denied");
-        }
+    const app = await applicationRepository.findById(role.applicationId);
 
-        return rolePermissionRepository.findPermissionsByRole(roleId);
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
     }
+
+    await rolePermissionRepository.removePermission(roleId, permissionId);
+  }
+
+  async listPermissions(currentUser, roleId) {
+    const role = await roleRepository.findById(roleId);
+    if (!role) throw new NotFoundError('Role not found');
+
+    const app = await applicationRepository.findById(role.applicationId);
+
+    if (!currentUser.is_global_admin && app.tenantId !== currentUser.tenantId) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    return rolePermissionRepository.findPermissionsByRole(roleId);
+  }
 }

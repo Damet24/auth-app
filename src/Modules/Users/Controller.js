@@ -62,3 +62,38 @@ export async function deactivateUser(request, reply) {
 
   return reply.code(204).send();
 }
+
+export async function assignRole(request, reply) {
+  const schema = z.object({
+    userId: z.uuid(),
+    roleId: z.uuid(),
+  });
+
+  const { userId, roleId } = schema.parse(request.body);
+
+  await service.assignRole(request.user, userId, roleId);
+
+  return reply.code(204).send();
+}
+
+export async function removeRole(request, reply) {
+  const schema = z.object({
+    userId: z.uuid(),
+    roleId: z.uuid(),
+  });
+
+  const { userId, roleId } = schema.parse(request.body);
+
+  await service.removeRole(request.user, userId, roleId);
+
+  return reply.code(204).send();
+}
+
+export async function listUserRoles(request, reply) {
+  const schema = z.object({ userId: z.uuid() });
+  const { userId } = schema.parse(request.params);
+
+  const result = await service.listUserRoles(request.user, userId);
+
+  return reply.send(result);
+}
