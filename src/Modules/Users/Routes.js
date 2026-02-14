@@ -1,5 +1,5 @@
-import {authenticate} from "../Middlewares/Authenticate.js";
-import {authorize} from "../Middlewares/Authorize.js";
+import {authenticate} from "../../Middlewares/Authenticate.js";
+import {authorize} from "../../Middlewares/Authorize.js";
 import {listUsers} from "./UserController.js";
 
 

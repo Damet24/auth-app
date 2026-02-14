@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { publicKey } from "../../Config/Jwt.js";
-import { userRepository } from "../../Domain/Repositories/index.js";
-import { TokenInvalidatedError } from "../../Domain/Errors/AuthErrors.js";
+import { publicKey } from "../Config/Jwt.js";
+import { userRepository } from "../Domain/Repositories/index.js";
+import { TokenInvalidatedError } from "../Domain/Errors/AuthErrors.js";
 
 export async function authenticate(request, reply) {
     const authHeader = request.headers.authorization;
