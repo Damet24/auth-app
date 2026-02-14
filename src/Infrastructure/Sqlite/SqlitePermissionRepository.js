@@ -4,8 +4,9 @@ export class SqlitePermissionRepository {
   }
 
   async findByUserAndApp(userId, applicationId) {
-    const rows = await this.db.all(
-      `
+    const rows = await this.db
+      .prepare(
+        `
       SELECT DISTINCT p.name
       FROM permissions p
       JOIN role_permissions rp ON rp.permission_id = p.id
@@ -13,9 +14,9 @@ export class SqlitePermissionRepository {
       JOIN user_roles ur ON ur.role_id = r.id
       WHERE ur.user_id = ?
       AND p.application_id = ?
-    `,
-      [userId, applicationId]
-    );
+    `
+      )
+      .all(userId, applicationId);
 
     return rows.map((p) => p.name);
   }
