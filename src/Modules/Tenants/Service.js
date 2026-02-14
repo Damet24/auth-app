@@ -7,7 +7,7 @@ import {
 
 export class Service {
   async listTenants(currentUser) {
-    if (!currentUser.is_global_admin) {
+    if (!currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can list tenants');
     }
 
@@ -15,7 +15,7 @@ export class Service {
   }
 
   async getTenantById(currentUser, tenantId) {
-    if (!currentUser.is_global_admin) {
+    if (!currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can view tenants');
     }
 
@@ -29,7 +29,7 @@ export class Service {
   }
 
   async createTenant(currentUser, { name }) {
-    if (!currentUser.is_global_admin) {
+    if (!currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can create tenants');
     }
 
@@ -43,7 +43,7 @@ export class Service {
   }
 
   async updateTenant(currentUser, tenantId, { name }) {
-    if (!currentUser.is_global_admin) {
+    if (!currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can update tenants');
     }
 
@@ -64,7 +64,7 @@ export class Service {
   }
 
   async deactivateTenant(currentUser, tenantId) {
-    if (!currentUser.is_global_admin) {
+    if (!currentUser.isGlobalAdmin) {
       throw new ForbiddenError('Only global admin can deactivate tenants');
     }
 

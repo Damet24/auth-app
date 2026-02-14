@@ -12,7 +12,7 @@ export async function listPermissions(request, reply) {
 }
 
 export async function createPermission(request, reply) {
-  const paramsSchema = z.object({ applicationId: z.string().uuid() });
+  const paramsSchema = z.object({ applicationId: z.uuid() });
   const bodySchema = z.object({ name: z.string().min(3) });
 
   const { applicationId } = paramsSchema.parse(request.params);

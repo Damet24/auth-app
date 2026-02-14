@@ -28,7 +28,7 @@ export async function updateApplication(request, reply) {
   const paramsSchema = z.object({ id: z.string().uuid() });
   const bodySchema = z.object({
     name: z.string().min(3).optional(),
-    redirectUrl: z.string().url().optional(),
+    redirectUrl: z.url().optional(),
     tokenStrategy: z.string().optional(),
     accessTokenTtl: z.number().optional(),
     refreshTokenTtl: z.number().optional(),
