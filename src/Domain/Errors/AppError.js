@@ -8,8 +8,20 @@ export class AppError extends Error {
   }
 }
 
-export class ForbiddenError extends AppError {}
+export class ForbiddenError extends AppError {
+  constructor(message = 'Forbidden') {
+    super(message, 403, 'FORBIDDEN');
+  }
+}
 
-export class NotFoundError extends AppError {}
+export class NotFoundError extends AppError {
+  constructor(message = 'Resource not found') {
+    super(message, 404, 'NOT_FOUND');
+  }
+}
 
-export class ConflictError extends AppError {}
+export class ConflictError extends AppError {
+  constructor(message = 'Conflict') {
+    super(message, 409, 'CONFLICT');
+  }
+}

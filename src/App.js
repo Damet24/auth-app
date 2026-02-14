@@ -4,6 +4,7 @@ import authRoutes from './Modules/Auth/Routes.js';
 import userRoutes from './Modules/Users/Routes.js';
 import { ZodError } from 'zod';
 import tenantRoutes from './Modules/Tenants/Routes.js';
+import applicationRoutes from './Modules/Applications/Routes.js';
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -42,6 +43,7 @@ export function buildApp() {
   app.register(authRoutes, { prefix: '/auth' });
   app.register(userRoutes, { prefix: '/users' });
   app.register(tenantRoutes, { prefix: '/tenants' });
+  app.register(applicationRoutes, { prefix: '/applications' });
 
   return app;
 }
