@@ -2,11 +2,20 @@ import Fastify from 'fastify';
 import { AppError } from './Domain/Errors/AppError.js';
 import authRoutes from './Modules/Auth/Routes.js';
 import userRoutes from './Modules/Users/Routes.js';
+import { ZodError } from 'zod';
 
 export function buildApp() {
   const app = Fastify({ logger: true });
 
   app.setErrorHandler((error, request, reply) => {
+    if (error instanceof ZodError) {
+      return reply.code(400).send({
+        error: 'VALIDATION_ERROR',
+        message: 'Invalid request data',
+        details: error.flatten().fieldErrors,
+      });
+    }
+
     if (error instanceof AppError) {
       return reply.code(error.statusCode).send({
         error: error.code,
@@ -18,11 +27,14 @@ export function buildApp() {
 
     return reply.code(500).send({
       error: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong',
+      message:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Something went wrong',
     });
   });
 
-  app.get('/', (_req, _res) => {
+  app.get('/', async () => {
     return { hello: 'world' };
   });
 

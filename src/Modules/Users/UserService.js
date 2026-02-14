@@ -20,10 +20,7 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    if (
-      !currentUser.isGlobalAdmin &&
-      user.tenantId !== currentUser.tenantId
-    ) {
+    if (!currentUser.isGlobalAdmin && user.tenantId !== currentUser.tenantId) {
       throw new ForbiddenError('Cannot access user from another tenant');
     }
 
@@ -61,10 +58,7 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    if (
-      !currentUser.isGlobalAdmin &&
-      user.tenantId !== currentUser.tenantId
-    ) {
+    if (!currentUser.isGlobalAdmin && user.tenantId !== currentUser.tenantId) {
       throw new ForbiddenError('Cannot update user from another tenant');
     }
 
@@ -78,10 +72,7 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    if (
-      !currentUser.isGlobalAdmin &&
-      user.tenantId !== currentUser.tenantId
-    ) {
+    if (!currentUser.isGlobalAdmin && user.tenantId !== currentUser.tenantId) {
       throw new ForbiddenError('Cannot deactivate user from another tenant');
     }
 

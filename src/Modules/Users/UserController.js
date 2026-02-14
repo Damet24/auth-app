@@ -1,10 +1,64 @@
 import { z } from 'zod';
 import { UserService } from './UserService.js';
-import { userRepository } from '../../Domain/Repositories/index.js';
 
 const service = new UserService();
 
-export async function listUsers(request, response) {
+export async function listUsers(request, reply) {
   const users = await service.listUsers(request.user);
-  return response.send(users);
+  return reply.send(users);
+}
+
+export async function getUser(request, reply) {
+  const schema = z.object({
+    id: z.uuid(),
+  });
+
+  const { id } = schema.parse(request.params);
+
+  const user = await service.getUserById(request.user, id);
+
+  return reply.send(user);
+}
+
+export async function createUser(request, reply) {
+  const schema = z.object({
+    email: z.email(),
+    isGlobalAdmin: z.boolean().optional(),
+  });
+
+  const data = schema.parse(request.body);
+
+  const user = await service.createUser(request.user, data);
+
+  return reply.code(201).send(user);
+}
+
+export async function updateUser(request, reply) {
+  const paramsSchema = z.object({
+    id: z.uuid(),
+  });
+
+  const bodySchema = z.object({
+    emailVerified: z.boolean().optional(),
+    active: z.boolean().optional(),
+  });
+
+  const { id } = paramsSchema.parse(request.params);
+  const updateData = bodySchema.parse(request.body);
+
+  const user = await service.updateUser(request.user, id, updateData);
+
+  return reply.send(user);
+}
+
+export async function deactivateUser(request, reply) {
+  const schema = z.object({
+    id: z.uuid(),
+  });
+
+  const { id } = schema.parse(request.params);
+
+  await service.deactivateUser(request.user, id);
+
+  return reply.code(204).send();
 }

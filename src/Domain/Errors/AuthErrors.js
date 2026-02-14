@@ -36,13 +36,13 @@ export class TokenInvalidatedError extends AppError {
   }
 }
 
-export class NotFoundError extends AppError  {
+export class NotFoundError extends AppError {
   constructor() {
     super('Not Found', 404, 'NOT_FOUND');
   }
 }
 
-export class ForbiddenError extends AppError  {
+export class ForbiddenError extends AppError {
   constructor() {
     super('Forbidden', 403, 'FORBIDDEN');
   }
