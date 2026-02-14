@@ -1,9 +1,9 @@
-import Redis from "ioredis";
-import {env} from "../../config/env.js";
+import Redis from 'ioredis';
+import { env } from '../../config/env.js';
 
 const redis = new Redis({
-    host: env.redisHost,
-    port: env.redisPort
+  host: env.redisHost,
+  port: env.redisPort,
 });
 
 export default redis;

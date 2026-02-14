@@ -1,10 +1,11 @@
 export class SqlitePermissionRepository {
-    constructor(db) {
-        this.db = db;
-    }
+  constructor(db) {
+    this.db = db;
+  }
 
-    async findByUserAndApp(userId, applicationId) {
-        const rows = await this.db.all(`
+  async findByUserAndApp(userId, applicationId) {
+    const rows = await this.db.all(
+      `
       SELECT DISTINCT p.name
       FROM permissions p
       JOIN role_permissions rp ON rp.permission_id = p.id
@@ -12,8 +13,10 @@ export class SqlitePermissionRepository {
       JOIN user_roles ur ON ur.role_id = r.id
       WHERE ur.user_id = ?
       AND p.application_id = ?
-    `, [userId, applicationId]);
+    `,
+      [userId, applicationId]
+    );
 
-        return rows.map(p => p.name);
-    }
+    return rows.map((p) => p.name);
+  }
 }
