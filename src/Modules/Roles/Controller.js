@@ -37,3 +37,38 @@ export async function updateRole(request, reply) {
 
     return reply.send(result);
 }
+
+export async function assignPermission(request, reply) {
+    const schema = z.object({
+        roleId: z.uuid(),
+        permissionId: z.string().uuid()
+    });
+
+    const { roleId, permissionId } = schema.parse(request.body);
+
+    await service.assignPermission(request.user, roleId, permissionId);
+
+    return reply.code(204).send();
+}
+
+export async function removePermission(request, reply) {
+    const schema = z.object({
+        roleId: z.uuid(),
+        permissionId: z.string().uuid()
+    });
+
+    const { roleId, permissionId } = schema.parse(request.body);
+
+    await service.removePermission(request.user, roleId, permissionId);
+
+    return reply.code(204).send();
+}
+
+export async function listRolePermissions(request, reply) {
+    const schema = z.object({ roleId: z.string().uuid() });
+    const { roleId } = schema.parse(request.params);
+
+    const result = await service.listPermissions(request.user, roleId);
+
+    return reply.send(result);
+}

@@ -3,7 +3,7 @@ import { authorize } from '../../Middlewares/Authorize.js';
 import {
     listRoles,
     createRole,
-    updateRole
+    updateRole, listRolePermissions, assignPermission, removePermission
 } from './Controller.js';
 import {PERMISSIONS} from "../../Domain/Constants/Permissions.js";
 
@@ -27,4 +27,23 @@ export default async function roleRoutes(fastify) {
         { preHandler: [authenticate, authorize(PERMISSIONS.ROLE.UPDATE)] },
         updateRole
     );
+
+    fastify.get(
+        '/:roleId/permissions',
+        { preHandler: [authenticate, authorize(PERMISSIONS.ROLE.READ)] },
+        listRolePermissions
+    );
+
+    fastify.post(
+        '/permissions',
+        { preHandler: [authenticate, authorize(PERMISSIONS.ROLE.UPDATE)] },
+        assignPermission
+    );
+
+    fastify.delete(
+        '/permissions',
+        { preHandler: [authenticate, authorize(PERMISSIONS.ROLE.UPDATE)] },
+        removePermission
+    );
+
 }

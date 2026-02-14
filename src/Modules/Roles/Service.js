@@ -1,6 +1,6 @@
 import {
     roleRepository,
-    applicationRepository
+    applicationRepository, permissionRepository, rolePermissionRepository
 } from '../../Domain/Repositories/index.js';
 
 import {
@@ -16,7 +16,7 @@ export class RoleService {
         if (!app) throw new NotFoundError("Application not found");
 
         if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenant_id) {
+            app.tenantId !== currentUser.tenantId) {
             throw new ForbiddenError("Access denied");
         }
 
@@ -28,7 +28,7 @@ export class RoleService {
         if (!app) throw new NotFoundError("Application not found");
 
         if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenant_id) {
+            app.tenantId !== currentUser.tenantId) {
             throw new ForbiddenError("Access denied");
         }
 
@@ -45,10 +45,59 @@ export class RoleService {
         const app = await applicationRepository.findById(role.applicationId);
 
         if (!currentUser.is_global_admin &&
-            app.tenantId !== currentUser.tenant_id) {
+            app.tenantId !== currentUser.tenantId) {
             throw new ForbiddenError("Access denied");
         }
 
         return roleRepository.update(roleId, data);
+    }
+
+    async assignPermission(currentUser, roleId, permissionId) {
+        const role = await roleRepository.findById(roleId);
+        if (!role) throw new NotFoundError("Role not found");
+
+        const permission = await permissionRepository.findById(permissionId);
+        if (!permission) throw new NotFoundError("Permission not found");
+
+        if (role.applicationId !== permission.applicationId) {
+            throw new ForbiddenError("Permission does not belong to role application");
+        }
+
+        const app = await applicationRepository.findById(role.applicationId);
+
+        if (!currentUser.is_global_admin &&
+            app.tenantId !== currentUser.tenantId) {
+            throw new ForbiddenError("Access denied");
+        }
+
+        await rolePermissionRepository.addPermission(roleId, permissionId);
+    }
+
+    async removePermission(currentUser, roleId, permissionId) {
+        const role = await roleRepository.findById(roleId);
+        if (!role) throw new NotFoundError("Role not found");
+
+        const app = await applicationRepository.findById(role.applicationId);
+
+        if (!currentUser.is_global_admin &&
+            app.tenantId !== currentUser.tenantId) {
+            throw new ForbiddenError("Access denied");
+        }
+
+        await rolePermissionRepository.removePermission(roleId, permissionId);
+    }
+
+    async listPermissions(currentUser, roleId) {
+        const role = await roleRepository.findById(roleId);
+        if (!role) throw new NotFoundError("Role not found");
+
+        const app = await applicationRepository.findById(role.applicationId);
+
+        if (!currentUser.is_global_admin &&
+            app.tenantId !== currentUser.tenantId) {
+            throw new ForbiddenError("Access denied");
+        }
+
+        return rolePermissionRepository.findPermissionsByRole(roleId);
     }
 }
