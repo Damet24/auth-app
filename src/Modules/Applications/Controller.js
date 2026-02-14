@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { ApplicationService } from './ApplicationService.js';
+import { Service } from './Service.js';
 
-const service = new ApplicationService();
+const service = new Service();
 
 export async function listApplications(request, reply) {
   const apps = await service.listApplications(request.user);

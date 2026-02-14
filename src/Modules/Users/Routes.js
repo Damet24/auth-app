@@ -7,8 +7,8 @@ import {
   createUser,
   updateUser,
   deactivateUser,
-} from './UserController.js';
-import { PERMISSIONS } from '../Auth/Permissions.js';
+} from './Controller.js';
+import { PERMISSIONS } from '../../Domain/Constants/Permissions.js';
 
 export default async function userRoutes(fastify) {
   fastify.get(

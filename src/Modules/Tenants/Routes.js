@@ -7,8 +7,8 @@ import {
   createTenant,
   updateTenant,
   deactivateTenant,
-} from './TenantController.js';
-import { PERMISSIONS } from '../Auth/Permissions.js';
+} from './Controller.js';
+import { PERMISSIONS } from '../../Domain/Constants/Permissions.js';
 
 export default async function tenantRoutes(fastify) {
   fastify.get(

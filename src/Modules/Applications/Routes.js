@@ -4,8 +4,8 @@ import {
   listApplications,
   createApplication,
   updateApplication,
-} from './ApplicationController.js';
-import { PERMISSIONS } from '../Auth/Permissions.js';
+} from './Controller.js';
+import { PERMISSIONS } from '../../Domain/Constants/Permissions.js';
 
 export default async function applicationRoutes(fastify) {
   fastify.get(

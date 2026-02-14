@@ -5,7 +5,7 @@ import {
 } from '../../Domain/Errors/AuthErrors.js';
 import { UserAlreadyExists } from '../../Domain/Errors/UserErrors.js';
 
-export class UserService {
+export class Service {
   async listUsers(currentUser) {
     if (currentUser.isGlobalAdmin) {
       return await userRepository.findAll();

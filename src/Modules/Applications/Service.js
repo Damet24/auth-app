@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { applicationRepository } from '../../Domain/Repositories/index.js';
 import { ForbiddenError, NotFoundError } from '../../Domain/Errors/AppError.js';
 
-export class ApplicationService {
+export class Service {
   async listApplications(currentUser) {
     if (currentUser.is_global_admin) {
       return await applicationRepository.findByTenant(currentUser.tenantId);

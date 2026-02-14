@@ -1,8 +1,8 @@
-import { AuthService } from './AuthService.js';
+import { Service } from './Service.js';
 import { z } from 'zod';
 import { validate } from '../../utils/validate.js';
 
-const service = new AuthService();
+const service = new Service();
 
 export async function login(request, reply) {
   const loginSchema = z.object({

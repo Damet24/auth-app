@@ -16,7 +16,7 @@ src/
 │    │     └── TenantRepository.js
 │    │
 │    └── services/
-│          ├── AuthService.js
+│          ├── Service.js
 │          └── TokenService.js
 │
 ├── infrastructure/

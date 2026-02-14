@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { TenantService } from './TenantService.js';
+import { Service } from './Service.js';
 
-const service = new TenantService();
+const service = new Service();
 
 export async function listTenants(request, reply) {
   const tenants = await service.listTenants(request.user);

@@ -33,7 +33,7 @@ function calculateExpiration(seconds) {
   return new Date(Date.now() + seconds * 1000);
 }
 
-export class AuthService {
+export class Service {
   async login({ email, password, clientId }) {
     if (!clientId || !email || !password) {
       throw new InvalidCredentialsError();

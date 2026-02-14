@@ -5,7 +5,7 @@ import {
   ConflictError,
 } from '../../Domain/Errors/AppError.js';
 
-export class TenantService {
+export class Service {
   async listTenants(currentUser) {
     if (!currentUser.is_global_admin) {
       throw new ForbiddenError('Only global admin can list tenants');
